@@ -89,6 +89,21 @@ userSchema.statics.findByCredentials = async (email, password)=>{
 
 }
 
+userSchema.statics.findByCredentialsAndDelete = async (email, password)=>{
+  const user = await User.findOne({email})
+  if(!user){
+      throw new Error("Unable to login!")
+  }
+  //comparing stored password with user entered password
+  const isMatch = await bcrypt.compare(password, user.password)
+  if(!isMatch){
+      throw new Error("Unable to login!")
+  }
+  await User.findOneAndDelete({email: email, password: user.password})
+  return user
+
+}
+
 //user image relationship
 userSchema.virtual("images", {
     ref:"Image",

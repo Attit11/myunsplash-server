@@ -35,16 +35,31 @@ router.post("/user/login", async (req, res) => {
 });
 
 //get user
+router.get("/user/me", auth, async (req, res) => {
+  try {
+    res.send(req.user);
+  } catch (error) {
+    console.log("❌ Error Occurred! ", error);
+    res.status(401).send({ error });
+  }
+});
 
-router.get("/user/me", auth, async(req, res)=>{
-    try {
-        res.send(req.user)
-    } catch (error) {
-        console.log("❌ Error Occurred! ", error);
-        res.status(401).send({ error });
+//delete user
+router.delete("/user", auth, async (req, res) => {
+  try {
+    //finding user by credentials
+    const user = await User.findByCredentialsAndDelete(
+      req.user.email,
+      req.body.password
+    );
+    if (!user) {
+      throw new Error("Unable to find the user");
     }
-})
-
-
+    res.send({ message: "User Deleted!" });
+  } catch (error) {
+    console.log("❌ Error Occurred! ", error);
+    res.status(401).send({ error });
+  }
+});
 
 module.exports = router;
