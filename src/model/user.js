@@ -95,6 +95,12 @@ userSchema.virtual("images", {
     foreignField: "owner"
 })
 
+//delete images uploaded by user when user is deleted
+userSchema.pre('remove', async function(){
+    const user = this
+    await User.deleteMany({owner: user._id})
+})
+
 
 
 
