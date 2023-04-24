@@ -55,6 +55,23 @@ userSchema.pre("save", async function (next) {
   }
 });
 
+//generating auth token using jsonwebtoken
+//methods are accessible on instances
+userSchema.methods.generateAuthToken = async function () {
+  try {
+    const user = this;
+    //creating an auth token
+    const token = jwt.sign({ _id: user._id.toString() }, "myunsplash");
+    //adding token in user instance
+    user.tokens = user.tokens.concat({ token });
+    await user.save();
+    return token;
+  } catch (error) {
+    console.log("❌Error generating auth token!", e);
+    throw new Error({ e });
+  }
+};
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
