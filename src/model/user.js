@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,11 +22,7 @@ const userSchema = new mongoose.Schema({
   age: {
     type: Number,
     trim: true,
-    validate(value) {
-      if (value < 10) {
-        throw new Error("You are small");
-      }
-    },
+    default: 0,
   },
   password: {
     type: String,
@@ -48,6 +45,14 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+});
+
+//hashing the password before it gets saved to the database
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
 });
 
 const User = mongoose.model("User", userSchema);
