@@ -101,6 +101,15 @@ userSchema.pre('remove', async function(){
     await User.deleteMany({owner: user._id})
 })
 
+//hiding private data
+userSchema.methods.toJSON = function (){
+    const user = this;
+    const userObject = user.toObject()
+    delete userObject.password
+    delete userObject.tokens
+    return userObject
+}
+
 
 
 
