@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../model/user");
+const auth = require("../middleware/auth");
 
 const router = new express.Router();
 
@@ -19,12 +20,12 @@ router.post("/user", async (req, res) => {
 //user login
 router.post("/user/login", async (req, res) => {
   try {
-    //generating auth token
+    //finding user by credentials
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
     );
-
+    //generating auth token
     const token = await user.generateAuthToken();
     res.send({ user, token });
   } catch (error) {
@@ -32,5 +33,18 @@ router.post("/user/login", async (req, res) => {
     res.status(400).send({ error });
   }
 });
+
+//get user
+
+router.get("/user/me", auth, async(req, res)=>{
+    try {
+        res.send(req.user)
+    } catch (error) {
+        console.log("❌ Error Occurred! ", error);
+        res.status(401).send({ error });
+    }
+})
+
+
 
 module.exports = router;
