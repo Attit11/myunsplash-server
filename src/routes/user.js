@@ -89,7 +89,7 @@ router.post("/user/logout-all", auth, async (req, res) => {
 });
 
 //update user
-router.post("/user", auth, async (req, res) => {
+router.patch("/user", auth, async (req, res) => {
   try {
     const updates = Object.keys(req.body);
     const allowedUpdates = ["name", "age", "email", "password"];
