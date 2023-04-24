@@ -88,6 +88,13 @@ userSchema.statics.findByCredentials = async (email, password)=>{
 
 }
 
+//user image relationship
+userSchema.virtual("images", {
+    ref:"Image",
+    localField: "_id",
+    foreignField: "owner"
+})
+
 
 
 
