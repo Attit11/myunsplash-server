@@ -62,4 +62,48 @@ router.delete("/user", auth, async (req, res) => {
   }
 });
 
+//logout user
+router.post("/user/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter(
+      (token) => token.token != req.token
+    );
+    await req.user.save();
+    res.send({ message: "✅ Log out successful!" });
+  } catch (error) {
+    console.log("❌ Error Occurred! ", error);
+    res.status(401).send({ error });
+  }
+});
+
+//logout from all devices
+router.post("/user/logout-all", auth, async (req, res) => {
+  try {
+    req.user.tokens = [];
+    await req.user.save();
+    res.send({ message: "✅ Log out successful!" });
+  } catch (error) {
+    console.log("❌ Error Occurred! ", error);
+    res.status(401).send({ error });
+  }
+});
+
+//update user
+router.post("/user", auth, async (req, res) => {
+  try {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ["name", "age", "email", "password"];
+    const isValid = updates.every((update) => allowedUpdates.includes(update));
+    if (!isValid) {
+      res.status(401).send({ message: "❌ Invalid Updates!" });
+    }
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.send({ message: "✅ Update Successful!" });
+  } catch (error) {
+    console.log("❌ Error Occurred! ", error);
+    res.status(401).send({ error });
+  }
+});
+
 module.exports = router;
